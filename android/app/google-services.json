@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "533791650680",
+    "project_id": "chat-app-f377f",
+    "storage_bucket": "chat-app-f377f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:533791650680:android:a239b086f409abd3ce0e8d",
+        "android_client_info": {
+          "package_name": "com.senseicoder.app.chat_own"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "533791650680-dngp5khf4jh23llv0vqcofj66hp4brre.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcCR2pWyfml47kAy1fLlKmBRwoPwhu8vE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "533791650680-dngp5khf4jh23llv0vqcofj66hp4brre.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
