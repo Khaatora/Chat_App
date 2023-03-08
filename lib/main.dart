@@ -1,5 +1,6 @@
 import 'package:chat_own/firebase_options.dart';
-import 'package:chat_own/modules/create_account/create_account.dart';
+import 'package:chat_own/modules/create_account/create_account_view.dart';
+import 'package:chat_own/modules/login_screen/login_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -19,9 +20,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: CreateAccountScreen.routeName,
+      initialRoute: LoginScreen.routeName,
       routes: {
         CreateAccountScreen.routeName:(context) => CreateAccountScreen(),
+        LoginScreen.routeName:(context) => LoginScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
