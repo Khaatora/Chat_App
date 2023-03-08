@@ -1,27 +1,49 @@
+import 'package:chat_own/base_class.dart';
+import 'package:chat_own/modules/create_account/create_account_navigator.dart';
 import 'package:chat_own/modules/create_account/create_account_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class CreateAccountScreen extends StatelessWidget {
+class CreateAccountScreen extends StatefulWidget{
   static const String routeName = "Create_Account_Screen";
 
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
-  TextEditingController userNameController = TextEditingController();
-  CreateAccountViewModel createAccountViewModel = CreateAccountViewModel();
+  @override
+  State<CreateAccountScreen> createState() => _CreateAccountScreenState();
+}
 
+class _CreateAccountScreenState extends BaseView<CreateAccountScreen, CreateAccountViewModel> implements CreateAccountNavigator{
+  late GlobalKey<FormState> formKey;
+
+  late TextEditingController emailController = TextEditingController();
+
+  late TextEditingController passwordController;
+
+  late TextEditingController nameController;
+
+  late TextEditingController userNameController;
+
+
+
+  @override
+  void initState() {
+    formKey = GlobalKey<FormState>();
+    passwordController = TextEditingController();
+    nameController =  TextEditingController();
+    userNameController = TextEditingController();
+    viewModel = initViewModel();
+    super.initState();
+    viewModel.navigator = this;
+  }
 
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context);
-    return ChangeNotifierProvider(
-      create: (context) => createAccountViewModel,
+    return ChangeNotifierProvider<CreateAccountViewModel>.value(
+      value: viewModel,
       builder: (context, child) {
         var obscurePassword = context.select<CreateAccountViewModel, bool>(
-            (value) => value.obscurePassword);
+            (value) => value.getObscurePassword);
         return Scaffold(
           backgroundColor: Colors.white,
           body: Column(
@@ -163,12 +185,11 @@ class CreateAccountScreen extends StatelessWidget {
                                   )),
                               suffixIcon: IconButton(
                                 onPressed: () {
-                                  createAccountViewModel.changeVisibility();
+                                  viewModel.changePasswordVisibility();
                                 },
-                                icon: Icon(
-                                    obscurePassword
-                                        ? Icons.visibility_off
-                                        : Icons.visibility),
+                                icon: Icon(obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility),
                               ),
                             ),
                           ),
@@ -176,7 +197,7 @@ class CreateAccountScreen extends StatelessWidget {
                             height: 5,
                           ),
                           ElevatedButton(
-                              onPressed: CreateAccount,
+                              onPressed: validateForm,
                               style: ButtonStyle(
                                   side: MaterialStateBorderSide.resolveWith(
                                       (states) => BorderSide())),
@@ -192,10 +213,25 @@ class CreateAccountScreen extends StatelessWidget {
     );
   }
 
-  void CreateAccount() {
+  void validateForm() {
     if (formKey.currentState!.validate()) {
-      createAccountViewModel.createAccountWithFirebaseAuth(
+      viewModel.createAccountWithFirebaseAuth(
           emailController.text, passwordController.text);
     }
   }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    userNameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  CreateAccountViewModel initViewModel() {
+    return CreateAccountViewModel();
+  }
+
 }
