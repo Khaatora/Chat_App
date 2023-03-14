@@ -1,18 +1,24 @@
 import 'package:chat_own/base_class.dart';
+import 'package:chat_own/models/user.dart';
 import 'package:chat_own/modules/create_account/create_account_navigator.dart';
 import 'package:chat_own/modules/create_account/create_account_viewmodel.dart';
+import 'package:chat_own/modules/home_screen/home_view.dart';
+import 'package:chat_own/modules/login_screen/login_view.dart';
+import 'package:chat_own/providers/my_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class CreateAccountScreen extends StatefulWidget{
+class CreateAccountScreen extends StatefulWidget {
   static const String routeName = "Create_Account_Screen";
 
   @override
   State<CreateAccountScreen> createState() => _CreateAccountScreenState();
 }
 
-class _CreateAccountScreenState extends BaseView<CreateAccountScreen, CreateAccountViewModel> implements CreateAccountNavigator{
+class _CreateAccountScreenState
+    extends BaseView<CreateAccountScreen, CreateAccountViewModel>
+    implements CreateAccountNavigator {
   late GlobalKey<FormState> formKey;
 
   late TextEditingController emailController = TextEditingController();
@@ -23,13 +29,11 @@ class _CreateAccountScreenState extends BaseView<CreateAccountScreen, CreateAcco
 
   late TextEditingController userNameController;
 
-
-
   @override
   void initState() {
     formKey = GlobalKey<FormState>();
     passwordController = TextEditingController();
-    nameController =  TextEditingController();
+    nameController = TextEditingController();
     userNameController = TextEditingController();
     viewModel = initViewModel();
     super.initState();
@@ -202,6 +206,14 @@ class _CreateAccountScreenState extends BaseView<CreateAccountScreen, CreateAcco
                                   side: MaterialStateBorderSide.resolveWith(
                                       (states) => BorderSide())),
                               child: const Text("Create Account")),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          TextButton(
+                              onPressed: () => Navigator.pushReplacementNamed(
+                                  context, LoginScreen.routeName),
+                              child: const Text(
+                                  "Already Have An Account? Click Here!"))
                         ],
                       ),
                     )),
@@ -216,7 +228,10 @@ class _CreateAccountScreenState extends BaseView<CreateAccountScreen, CreateAcco
   void validateForm() {
     if (formKey.currentState!.validate()) {
       viewModel.createAccountWithFirebaseAuth(
-          emailController.text, passwordController.text);
+          email: emailController.text,
+          password: passwordController.text,
+          userName: userNameController.text,
+          firstName: nameController.text);
     }
   }
 
@@ -234,4 +249,10 @@ class _CreateAccountScreenState extends BaseView<CreateAccountScreen, CreateAcco
     return CreateAccountViewModel();
   }
 
+  @override
+  void goToHome(UserModel? userModel) {
+    context.read<MyProvider>();
+    Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName,(route) => false,
+        arguments: userModel);
+  }
 }
