@@ -1,4 +1,7 @@
 import 'package:chat_own/base_class.dart';
+import 'package:chat_own/models/user.dart';
+import 'package:chat_own/modules/create_account/create_account_view.dart';
+import 'package:chat_own/modules/home_screen/home_view.dart';
 import 'package:chat_own/modules/login_screen/login_navigator.dart';
 import 'package:chat_own/modules/login_screen/login_view_model.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +27,6 @@ class _LoginScreenState extends BaseView<LoginScreen, LoginViewModel>
     formKey = GlobalKey<FormState>();
     emailController = TextEditingController();
     passwordController = TextEditingController();
-    // TODO: implement initState
     super.initState();
     viewModel.navigator = this;
   }
@@ -141,6 +143,14 @@ class _LoginScreenState extends BaseView<LoginScreen, LoginViewModel>
                                   side: MaterialStateBorderSide.resolveWith(
                                       (states) => BorderSide())),
                               child: const Text("Login")),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          TextButton(
+                              onPressed: () => Navigator.pushReplacementNamed(
+                                  context, CreateAccountScreen.routeName),
+                              child: const Text(
+                                  "Don't Have An Account? Click Here!"))
                         ]),
                   ),
                 ),
@@ -168,6 +178,13 @@ class _LoginScreenState extends BaseView<LoginScreen, LoginViewModel>
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  @override
+  void goToHome(UserModel? userModel) {
+    Navigator.pushNamedAndRemoveUntil(
+        context, HomeScreen.routeName, (route) => false,
+        arguments: userModel);
   }
 
   void unFocusKeyboardFromScope() {

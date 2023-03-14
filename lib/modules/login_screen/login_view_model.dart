@@ -1,5 +1,7 @@
 import 'package:chat_own/base_class.dart';
+import 'package:chat_own/models/user.dart';
 import 'package:chat_own/modules/login_screen/login_navigator.dart';
+import 'package:chat_own/shared/network/cloud_firestore_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginViewModel extends BaseViewModel<LoginNavigator>{
@@ -25,7 +27,10 @@ class LoginViewModel extends BaseViewModel<LoginNavigator>{
         email: email,
         password: password,
       );
-      message = "Successfully Logged In";
+      //Read Data from Database
+      UserModel? userModel = await CloudFirestoreUtils.readUserFromDatabase(credential.user?.uid);
+      navigator.goToHome(userModel);
+      return;
     }on FirebaseAuthException{
       message = "Wrong Email Or Password";
     } catch (e) {
