@@ -18,7 +18,9 @@ class AddRoomViewModel extends BaseViewModel<AddRoomNavigator> {
     try {
       await CloudFirestoreUtils.addRoomToDatabase(chatRoom);
 
-      message = "Room Added";
+      navigator.hideDialog();
+      navigator.pop();
+      return;
     } catch (e) {
       message = e.toString();
     }
