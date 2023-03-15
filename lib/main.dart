@@ -1,5 +1,6 @@
 import 'package:chat_own/firebase_options.dart';
 import 'package:chat_own/modules/add_room/add_room_view.dart';
+import 'package:chat_own/modules/chat_screen/chat_view.dart';
 import 'package:chat_own/modules/create_account/create_account_view.dart';
 import 'package:chat_own/modules/home_screen/home_view.dart';
 import 'package:chat_own/modules/login_screen/login_view.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         LoginScreen.routeName: (context) => const LoginScreen(),
         HomeScreen.routeName: (context) => const HomeScreen(),
         AddRoomScreen.routeName:(context) => AddRoomScreen(),
+        ChatScreen.routeName:(context) => ChatScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
