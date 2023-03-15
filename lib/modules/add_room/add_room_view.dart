@@ -38,7 +38,12 @@ class _AddRoomScreenState extends BaseView<AddRoomScreen, AddRoomViewModel>
         value: viewModel,
         builder: (context, child) {
           return Scaffold(
+            extendBodyBehindAppBar: true,
               backgroundColor: Colors.white,
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0.0,
+              ),
               body: Stack(
                 children: [
                   Image.asset(
@@ -229,5 +234,9 @@ class _AddRoomScreenState extends BaseView<AddRoomScreen, AddRoomViewModel>
 
   void unFocusKeyboardFromScope() {
     FocusScope.of(context).unfocus();
+  }
+
+  void pop(){
+    Navigator.pop(context);
   }
 }
