@@ -23,6 +23,11 @@ class CloudFirestoreUtils {
     );
   }
 
+  static Future<List<ChatRoomModel>> readRoomsFromFirestore() async{
+    var snapshot = await getRoomsCollection().get();
+    return snapshot.docs.map((e) => e.data()).toList();
+  }
+
   static Future<void> addUserToDatabase(UserModel user) {
     return getUsersCollection().doc(user.id).set(user);
   }
