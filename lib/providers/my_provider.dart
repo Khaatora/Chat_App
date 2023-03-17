@@ -18,4 +18,5 @@ class MyProvider extends ChangeNotifier{
     userModel = await CloudFirestoreUtils.readUserFromDatabase(firebaseUser?.uid);
   }
 
+
 }
