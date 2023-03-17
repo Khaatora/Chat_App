@@ -22,80 +22,100 @@ class _HomeScreenState extends BaseView<HomeScreen, HomeViewModel>
   @override
   void initState() {
     super.initState();
-    viewModel.readRooms();
     viewModel.navigator = this;
-
   }
 
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context);
-    return ChangeNotifierProvider.value(
-      value: viewModel,
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          title: const Text("Chat-App"),
-          centerTitle: true,
-          actions: [
-            IconButton(
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
-                  Navigator.pushReplacementNamed(
-                      context, LoginScreen.routeName);
-                },
-                icon: const Icon(Icons.logout))
-          ],
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-        ),
-        body: Column(children: [
-          Expanded(
-            child: Stack(
-              children: [
-                Image.asset(
-                  "assets/images/main_background_img_triangles.png",
-                ),
-                Positioned(
-                  top: mediaQuery.size.height*0.05,
-                  child: Consumer<HomeViewModel>(
-                    builder: (context, homeViewModel, child) {
-                      return SizedBox(width: mediaQuery.size.width,
-                        height: mediaQuery.size.height,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                          child: viewModel.rooms.isEmpty ? const Center(
-                            child: Text("No Rooms Are Added"),
-                          ):GridView.builder(
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                mainAxisSpacing: 12,
-                                crossAxisSpacing: 12,
-                                childAspectRatio: 1 / 1.5),
-                            itemCount: viewModel.rooms.length,
-                            itemBuilder: (context, index) {
-                              return RoomWidget(viewModel.rooms[index]);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                )
-              ],
-            ),
-          ),
-
-        ]),
-        floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.pushNamed(context, AddRoomScreen.routeName);
-            },
-            child: const Icon(
-              Icons.add,
-              color: Colors.white,
-            )),
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text("Chat-App"),
+        centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.pushReplacementNamed(
+                    context, LoginScreen.routeName);
+              },
+              icon: const Icon(Icons.logout))
+        ],
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
       ),
+      body: ChangeNotifierProvider.value(
+        value: viewModel,
+        builder: (context, child) {
+          return Column(children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  Image.asset(
+                    "assets/images/main_background_img_triangles.png",
+                  ),
+                  Positioned(
+                    top: mediaQuery.size.height*0.05,
+                    child: Consumer<HomeViewModel>(
+                      builder: (context, homeViewModel, child) {
+                        return SizedBox(width: mediaQuery.size.width,
+                          height: mediaQuery.size.height,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                            child: StreamBuilder(
+                              stream: viewModel.readRoomsAsStream(),
+                              builder: (context, snapshot) {
+                                if (snapshot.data==null || snapshot.connectionState == ConnectionState.waiting) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+                                viewModel.chatlist = snapshot.data!.docs.map((e) => e.data()).toList();
+                                if(viewModel.chatlist.isEmpty){
+                                  return const Center(
+                                    child: Text("No Rooms Are Added"),
+                                  );
+                                }
+                                if (snapshot.hasError) {
+                                  return const Center(
+                                    child:
+                                    Text("Something Went Wrong"),
+                                  );
+                                }
+                                return GridView.builder(
+                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      mainAxisSpacing: 12,
+                                      crossAxisSpacing: 12,
+                                      childAspectRatio: 1 / 1.5),
+                                  itemCount: viewModel.chatlist.length,
+                                  itemBuilder: (context, index) {
+                                    return RoomWidget(viewModel.chatlist[index]);
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ),
+
+          ]);
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed(context, AddRoomScreen.routeName);
+          },
+          child: const Icon(
+            Icons.add,
+            color: Colors.white,
+          )),
     );
   }
 
