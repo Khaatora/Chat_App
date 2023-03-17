@@ -28,6 +28,10 @@ class CloudFirestoreUtils {
     return snapshot.docs.map((e) => e.data()).toList();
   }
 
+  static Stream<QuerySnapshot<ChatRoomModel>> readRoomsFromFirestoreAsStream() {
+    return getRoomsCollection().snapshots();
+  }
+
   static Future<void> addUserToDatabase(UserModel user) {
     return getUsersCollection().doc(user.id).set(user);
   }
