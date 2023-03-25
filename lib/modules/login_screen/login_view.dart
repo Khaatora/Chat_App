@@ -4,19 +4,20 @@ import 'package:chat_own/modules/create_account/create_account_view.dart';
 import 'package:chat_own/modules/home_screen/home_view.dart';
 import 'package:chat_own/modules/login_screen/login_navigator.dart';
 import 'package:chat_own/modules/login_screen/login_view_model.dart';
+import 'package:chat_own/providers/my_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class LoginView extends StatefulWidget {
+  const LoginView({Key? key}) : super(key: key);
 
   static const String routeName = "/login";
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _LoginScreenState extends BaseView<LoginScreen, LoginViewModel>
+class _LoginViewState extends BaseView<LoginView, LoginViewModel>
     implements LoginNavigator {
   late GlobalKey<FormState> formKey;
   late TextEditingController emailController;
@@ -72,6 +73,7 @@ class _LoginScreenState extends BaseView<LoginScreen, LoginViewModel>
                           TextFormField(
                             controller: emailController,
                             keyboardType: TextInputType.emailAddress,
+                            enableSuggestions: false,
                             validator: (text) {
                               if (text!.trim() == "") {
                                 return "Please Enter Email";
@@ -101,9 +103,11 @@ class _LoginScreenState extends BaseView<LoginScreen, LoginViewModel>
                           const SizedBox(
                             height: 5,
                           ),
-                          // ------------------- User Name
+                          // ------------------- Password
                           TextFormField(
                             controller: passwordController,
+                            textInputAction: TextInputAction.done,
+                            keyboardType: TextInputType.visiblePassword,
                             validator: (text) {
                               if (text!.trim() == "") {
                                 return "Please Enter Valid Password";
@@ -112,6 +116,8 @@ class _LoginScreenState extends BaseView<LoginScreen, LoginViewModel>
                             },
                             autofocus: false,
                             obscureText: obscurePassword,
+                            enableSuggestions: false,
+                            autocorrect: false,
                             decoration: InputDecoration(
                               hintText: "Password",
                               border: OutlineInputBorder(
@@ -141,14 +147,14 @@ class _LoginScreenState extends BaseView<LoginScreen, LoginViewModel>
                               onPressed: validateForm,
                               style: ButtonStyle(
                                   side: MaterialStateBorderSide.resolveWith(
-                                      (states) => BorderSide())),
+                                      (states) => const BorderSide())),
                               child: const Text("Login")),
                           const SizedBox(
                             height: 5,
                           ),
                           TextButton(
                               onPressed: () => Navigator.pushReplacementNamed(
-                                  context, CreateAccountScreen.routeName),
+                                  context, CreateAccountView.routeName),
                               child: const Text(
                                   "Don't Have An Account? Click Here!"))
                         ]),
@@ -182,8 +188,9 @@ class _LoginScreenState extends BaseView<LoginScreen, LoginViewModel>
 
   @override
   void goToHome(UserModel? userModel) {
+    context.read<MyProvider>().initProvider();
     Navigator.pushNamedAndRemoveUntil(
-        context, HomeScreen.routeName, (route) => false,
+        context, HomeView.routeName, (route) => false,
         arguments: userModel);
   }
 
