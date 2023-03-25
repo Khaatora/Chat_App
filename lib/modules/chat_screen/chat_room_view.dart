@@ -6,6 +6,7 @@ import 'package:chat_own/modules/chat_screen/message_widget.dart';
 import 'package:chat_own/modules/login_screen/login_view.dart';
 import 'package:chat_own/providers/my_provider.dart';
 import 'package:chat_own/shared/components/size_config.dart';
+import 'package:chat_own/shared/extensions/string_extensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,7 @@ class _ChatRoomViewState extends BaseView<ChatRoomView, ChatViewModel>
     implements ChatNavigator {
   late ChatRoomModel room;
   late TextEditingController messageController;
+  bool isNewDate = false;
 
   @override
   void initState() {
@@ -114,11 +116,29 @@ class _ChatRoomViewState extends BaseView<ChatRoomView, ChatViewModel>
                                           child: Text("Send A Message!"),
                                         );
                                       }
-                                      return ListView.builder(
-                                        itemCount: messages.length,
+                                      return ListView.separated(
+                                        itemCount: messages.length +1,
+                                        separatorBuilder: (context, index) {
+                                          String currentDateTime = messages[index].dateTime.toStringDateFormat().substring(0, 10);
+                                          String prevDateTime = index !=0? messages[index-1].dateTime.toStringDateFormat().substring(0,10) : "";
+                                          if(index == 0){
+                                            return const SizedBox.shrink();
+                                          }
+                                          if(currentDateTime != prevDateTime){
+                                            return SizedBox(
+                                              child: Text(currentDateTime, textAlign: TextAlign.center),
+                                            );
+                                          }
+                                          return const SizedBox.shrink();
+                                        },
                                         itemBuilder: (context, index) {
+                                          if(index == 0){
+                                            return SizedBox(
+                                              child: Text(messages[index].dateTime.toStringDateFormat().substring(0, 10), textAlign: TextAlign.center),
+                                            )  ;
+                                          }
                                           return MessageBox(
-                                            message: messages[index],
+                                            message: messages[index-1],
                                           );
                                         },
                                       );
@@ -246,4 +266,5 @@ class _ChatRoomViewState extends BaseView<ChatRoomView, ChatViewModel>
     messageController.clear();
     setState(() {});
   }
+
 }
