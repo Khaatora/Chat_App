@@ -31,25 +31,31 @@ class SenderMessage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(convertMilliSecondSinceEpochToDateTime().substring(12),
-            style: const TextStyle(color: Colors.black54)),
-        Container(
-            margin: EdgeInsets.symmetric(
-                horizontal: SizeConfig.blockSizeHorizontal * 2,
-                vertical: SizeConfig.blockSizeVertical),
-            padding: EdgeInsets.symmetric(
-                horizontal: SizeConfig.blockSizeHorizontal * 2,
-                vertical: SizeConfig.blockSizeVertical),
-            decoration: const BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(12),
-                    topLeft: Radius.circular(12),
-                    bottomLeft: Radius.circular(12))),
-            child: Text(
-              message.content,
-              style: const TextStyle(color: Colors.white),
-            )),
+        Padding(
+          padding: EdgeInsets.symmetric(
+              horizontal: SizeConfig.blockSizeHorizontal * 4),
+          child: Text(convertMilliSecondSinceEpochToDateTime().substring(12),
+              style: const TextStyle(color: Colors.black54)),
+        ),
+        Flexible(
+          child: Container(
+              margin: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.blockSizeHorizontal * 2,
+                  vertical: SizeConfig.blockSizeVertical),
+              padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.blockSizeHorizontal * 2,
+                  vertical: SizeConfig.blockSizeVertical),
+              decoration: const BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(12),
+                      topLeft: Radius.circular(12),
+                      bottomLeft: Radius.circular(12))),
+              child: Text(
+                message.content,
+                style: const TextStyle(color: Colors.white),
+              )),
+        ),
       ],
     );
   }
@@ -78,7 +84,8 @@ class ReceiverMessage extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(
                 left: SizeConfig.blockSizeHorizontal * 4,
-                bottom: SizeConfig.blockSizeVertical),
+                bottom: SizeConfig.blockSizeVertical,
+            ),
             child: Text(
               message.senderName,
               style: const TextStyle(
@@ -88,24 +95,26 @@ class ReceiverMessage extends StatelessWidget {
           ),
           Row(
             children: [
-              Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: SizeConfig.blockSizeHorizontal * 5,
-                      vertical: SizeConfig.blockSizeVertical),
-                  decoration: const BoxDecoration(
-                      color: Colors.black12,
-                      borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(12),
-                          topLeft: Radius.circular(12),
-                          bottomRight: Radius.circular(12))),
-                  child: Text(
-                    message.content,
-                    style: const TextStyle(color: Colors.black38),
-                  )),
+              Flexible(
+                child: Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.blockSizeHorizontal * 5,
+                        vertical: SizeConfig.blockSizeVertical),
+                    decoration: const BoxDecoration(
+                        color: Colors.black12,
+                        borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(12),
+                            topLeft: Radius.circular(12),
+                            bottomRight: Radius.circular(12))),
+                    child: Text(
+                      message.content,
+                      style: const TextStyle(color: Colors.black38),
+                    )),
+              ),
               Transform.translate(
                 offset: Offset(0, SizeConfig.blockSizeVertical),
-                child: Container(
-                  margin: EdgeInsets.symmetric(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
                       horizontal: SizeConfig.blockSizeHorizontal * 4),
                   child: Text(
                       convertMilliSecondSinceEpochToDateTime().substring(12),
