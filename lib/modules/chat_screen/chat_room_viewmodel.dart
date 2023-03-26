@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ChatViewModel extends BaseViewModel<ChatNavigator>  {
   late ChatRoomModel chatRoomModel;
   late UserModel user;
+  late Stream<QuerySnapshot<MessageModel>> stream;
 
   void sendMessage(String content) {
     CloudFirestoreUtils.addMessageToDatabase(MessageModel(
@@ -22,6 +23,8 @@ class ChatViewModel extends BaseViewModel<ChatNavigator>  {
   }
 
   Stream<QuerySnapshot<MessageModel>> getMessages(){
-    return CloudFirestoreUtils.readMessagesFromFirestoreAsStream(chatRoomModel.id!);
+    print("doing");
+    stream = CloudFirestoreUtils.readMessagesFromFirestoreAsStream(chatRoomModel.id!);
+    return stream;
   }
 }
