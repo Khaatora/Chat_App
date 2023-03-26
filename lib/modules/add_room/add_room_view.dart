@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 class AddRoomView extends StatefulWidget {
   const AddRoomView({Key? key}) : super(key: key);
-  static const String routeName = "/AddRoom";
+  static const String routeName = "AddRoom";
 
   @override
   State<AddRoomView> createState() => _AddRoomViewState();
@@ -54,6 +54,8 @@ class _AddRoomViewState extends BaseView<AddRoomView, AddRoomViewModel>
                   children: [
                     Image.asset(
                       "assets/images/main_background_img_triangles.png",
+                      fit: BoxFit.fill,
+                      width: double.infinity,
                     ),
                     Padding(
                       padding: EdgeInsets.only(

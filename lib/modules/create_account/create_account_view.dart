@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CreateAccountView extends StatefulWidget {
-  static const String routeName = "Create_Account_Screen";
+  static const String routeName = "CreateAccount";
 
   @override
   State<CreateAccountView> createState() => _CreateAccountViewState();
@@ -66,6 +66,8 @@ class _CreateAccountViewState
                     children: [
                       Image.asset(
                         "assets/images/main_background_img_triangles.png",
+                        fit: BoxFit.fill,
+                        width: double.infinity,
                       ),
                     ],
                   ),
@@ -255,9 +257,10 @@ class _CreateAccountViewState
 
   @override
   void goToHome(UserModel? userModel) {
-    context.read<MyProvider>().initProvider();
+    context.read<MyProvider>().setUser = userModel!;
     Navigator.pushNamedAndRemoveUntil(
         context, HomeView.routeName, (route) => false,
         arguments: userModel);
   }
+
 }

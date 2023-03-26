@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
 
-  static const String routeName = "/Home";
+  static const String routeName = "Home";
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -55,6 +55,8 @@ class _HomeViewState extends BaseView<HomeView, HomeViewModel>
                   children: [
                     Image.asset(
                       "assets/images/main_background_img_triangles.png",
+                      fit: BoxFit.fill,
+                      width: double.infinity,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: kToolbarHeight),

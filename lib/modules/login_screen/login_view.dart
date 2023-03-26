@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
 
-  static const String routeName = "/login";
+  static const String routeName = "Login";
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -40,55 +40,87 @@ class _LoginViewState extends BaseView<LoginView, LoginViewModel>
         builder: (context, child) {
           bool obscurePassword = context.select<LoginViewModel, bool>(
               (value) => value.getObscurePassword);
-          return Scaffold(
-            backgroundColor: Colors.white,
-            body: Column(children: [
-              Stack(
-                children: [
-                  Image.asset(
-                    "assets/images/main_background_img_triangles.png",
-                  ),
-                  Positioned(
-                      top: mediaQuery.size.height * 0.1,
-                      width: mediaQuery.size.width,
-                      child: const Center(
-                          child: Text(
-                        "Login",
-                        style: TextStyle(color: Colors.white),
-                      )))
-                ],
+          return SafeArea(
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              extendBodyBehindAppBar: true,
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0.0,
+                centerTitle: true,
+                title: const Text(
+                  "Login",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-              Expanded(
-                child: Form(
-                  key: formKey,
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: mediaQuery.size.width * 0.03,
-                        vertical: mediaQuery.size.height * 0.02),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // ------------------- First Name
-                          TextFormField(
-                            controller: emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            enableSuggestions: false,
-                            validator: (text) {
-                              if (text!.trim() == "") {
-                                return "Please Enter Email";
-                              }
-                              if (!RegExp(
-                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                  .hasMatch(text)) {
-                                return "Invalid Email";
-                              }
-                              return null;
-                            },
-                            autofocus: false,
-                            textInputAction: TextInputAction.next,
-                            decoration: InputDecoration(
-                                hintText: "Email",
+              body: Column(children: [
+                Image.asset(
+                  "assets/images/main_background_img_triangles.png",
+                  fit: BoxFit.fill,
+                  width: double.infinity,
+                ),
+                Expanded(
+                  child: Form(
+                    key: formKey,
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: mediaQuery.size.width * 0.03,
+                          vertical: mediaQuery.size.height * 0.02),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // ------------------- First Name
+                            TextFormField(
+                              controller: emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              enableSuggestions: false,
+                              validator: (text) {
+                                if (text!.trim() == "") {
+                                  return "Please Enter Email";
+                                }
+                                if (!RegExp(
+                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                    .hasMatch(text)) {
+                                  return "Invalid Email";
+                                }
+                                return null;
+                              },
+                              autofocus: false,
+                              textInputAction: TextInputAction.next,
+                              decoration: InputDecoration(
+                                  hintText: "Email",
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: const BorderSide(
+                                        color: Colors.blue,
+                                      )),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: const BorderSide(
+                                        color: Colors.blue,
+                                      ))),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            // ------------------- Password
+                            TextFormField(
+                              controller: passwordController,
+                              textInputAction: TextInputAction.done,
+                              keyboardType: TextInputType.visiblePassword,
+                              validator: (text) {
+                                if (text!.trim() == "") {
+                                  return "Please Enter Valid Password";
+                                }
+                                return null;
+                              },
+                              autofocus: false,
+                              obscureText: obscurePassword,
+                              enableSuggestions: false,
+                              autocorrect: false,
+                              decoration: InputDecoration(
+                                hintText: "Password",
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: const BorderSide(
@@ -98,70 +130,40 @@ class _LoginViewState extends BaseView<LoginView, LoginViewModel>
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: const BorderSide(
                                       color: Colors.blue,
-                                    ))),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          // ------------------- Password
-                          TextFormField(
-                            controller: passwordController,
-                            textInputAction: TextInputAction.done,
-                            keyboardType: TextInputType.visiblePassword,
-                            validator: (text) {
-                              if (text!.trim() == "") {
-                                return "Please Enter Valid Password";
-                              }
-                              return null;
-                            },
-                            autofocus: false,
-                            obscureText: obscurePassword,
-                            enableSuggestions: false,
-                            autocorrect: false,
-                            decoration: InputDecoration(
-                              hintText: "Password",
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                    color: Colors.blue,
-                                  )),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                    color: Colors.blue,
-                                  )),
-                              suffixIcon: IconButton(
-                                onPressed: () {
-                                  viewModel.changePasswordVisibility();
-                                },
-                                icon: Icon(obscurePassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility),
+                                    )),
+                                suffixIcon: IconButton(
+                                  onPressed: () {
+                                    viewModel.changePasswordVisibility();
+                                  },
+                                  icon: Icon(obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility),
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          ElevatedButton(
-                              onPressed: validateForm,
-                              style: ButtonStyle(
-                                  side: MaterialStateBorderSide.resolveWith(
-                                      (states) => const BorderSide())),
-                              child: const Text("Login")),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          TextButton(
-                              onPressed: () => Navigator.pushReplacementNamed(
-                                  context, CreateAccountView.routeName),
-                              child: const Text(
-                                  "Don't Have An Account? Click Here!"))
-                        ]),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            ElevatedButton(
+                                onPressed: validateForm,
+                                style: ButtonStyle(
+                                    side: MaterialStateBorderSide.resolveWith(
+                                        (states) => const BorderSide())),
+                                child: const Text("Login")),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            TextButton(
+                                onPressed: () => Navigator.pushReplacementNamed(
+                                    context, CreateAccountView.routeName),
+                                child: const Text(
+                                    "Don't Have An Account? Click Here!"))
+                          ]),
+                    ),
                   ),
                 ),
-              ),
-            ]),
+              ]),
+            ),
           );
         });
   }
@@ -188,7 +190,7 @@ class _LoginViewState extends BaseView<LoginView, LoginViewModel>
 
   @override
   void goToHome(UserModel? userModel) {
-    context.read<MyProvider>().initProvider();
+    context.read<MyProvider>().setUser = userModel!;
     Navigator.pushNamedAndRemoveUntil(
         context, HomeView.routeName, (route) => false,
         arguments: userModel);
