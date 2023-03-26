@@ -1,20 +1,24 @@
 import 'package:chat_own/base_class.dart';
 import 'package:chat_own/models/chat_room.dart';
+import 'package:chat_own/models/message.dart';
 import 'package:chat_own/modules/chat_screen/chat_room_navigator.dart';
 import 'package:chat_own/modules/chat_screen/chat_room_viewmodel.dart';
 import 'package:chat_own/modules/chat_screen/message_widget.dart';
 import 'package:chat_own/modules/login_screen/login_view.dart';
 import 'package:chat_own/providers/my_provider.dart';
 import 'package:chat_own/shared/components/size_config.dart';
-import 'package:chat_own/shared/extensions/string_extensions.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'dart:math';
 
 class ChatRoomView extends StatefulWidget {
-  const ChatRoomView({Key? key}) : super(key: key);
-  static const String routeName = "/chat_screen";
+  static const String routeName = "Chat";
+  final ChatRoomModel room;
+
+  const ChatRoomView(this.room, {Key? key}) : super(key: key);
 
   @override
   State<ChatRoomView> createState() => _ChatRoomViewState();
@@ -24,20 +28,23 @@ class _ChatRoomViewState extends BaseView<ChatRoomView, ChatViewModel>
     implements ChatNavigator {
   late ChatRoomModel room;
   late TextEditingController messageController;
-  bool isNewDate = false;
+  late ScrollController scrollController;
+  Stream<QuerySnapshot<MessageModel>>? _messageStream;
 
   @override
   void initState() {
     messageController = TextEditingController();
+    scrollController = ScrollController();
     super.initState();
     viewModel.navigator = this;
+    room = widget.room;
+    viewModel.chatRoomModel = room;
+    viewModel.user = context.read<MyProvider>().userModel!;
+    _messageStream = viewModel.getMessages();
   }
 
   @override
   void didChangeDependencies() {
-    room = ModalRoute.of(context)!.settings.arguments as ChatRoomModel;
-    viewModel.chatRoomModel = room;
-
     super.didChangeDependencies();
   }
 
@@ -73,6 +80,8 @@ class _ChatRoomViewState extends BaseView<ChatRoomView, ChatViewModel>
                     children: [
                       Image.asset(
                         "assets/images/main_background_img_triangles.png",
+                        fit: BoxFit.fill,
+                        width: double.infinity,
                       ),
                       Align(
                         alignment: Alignment.center,
@@ -94,8 +103,9 @@ class _ChatRoomViewState extends BaseView<ChatRoomView, ChatViewModel>
                                 //message
                                 Expanded(
                                   flex: 15,
-                                  child: StreamBuilder(
-                                    stream: viewModel.getMessages(),
+                                  child: StreamBuilder<
+                                      QuerySnapshot<MessageModel>>(
+                                    stream: _messageStream,
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
@@ -116,29 +126,51 @@ class _ChatRoomViewState extends BaseView<ChatRoomView, ChatViewModel>
                                           child: Text("Send A Message!"),
                                         );
                                       }
+                                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                                        if (scrollController.hasClients) {
+                                          scrollController.animateTo(scrollController.position.maxScrollExtent,
+                                              duration: const Duration(milliseconds: 500),
+                                              curve: Curves.easeInOut);
+                                        }
+                                      });
                                       return ListView.separated(
-                                        itemCount: messages.length +1,
+                                        controller: scrollController,
+                                        itemCount: messages.length + 1,
                                         separatorBuilder: (context, index) {
-                                          String currentDateTime = messages[index].dateTime.toStringDateFormat().substring(0, 10);
-                                          String prevDateTime = index !=0? messages[index-1].dateTime.toStringDateFormat().substring(0,10) : "";
-                                          if(index == 0){
+                                          String currentDateTime =
+                                              toStringDateFormat(
+                                                      messages[index].dateTime)
+                                                  .substring(0, 10);
+                                          String prevDateTime = index != 0
+                                              ? toStringDateFormat(
+                                                      messages[index - 1]
+                                                          .dateTime)
+                                                  .substring(0, 10)
+                                              : "";
+                                          if (index == 0) {
                                             return const SizedBox.shrink();
                                           }
-                                          if(currentDateTime != prevDateTime){
+                                          if (currentDateTime != prevDateTime) {
                                             return SizedBox(
-                                              child: Text(currentDateTime, textAlign: TextAlign.center),
+                                              child: Text(currentDateTime,
+                                                  textAlign: TextAlign.center),
                                             );
                                           }
                                           return const SizedBox.shrink();
                                         },
                                         itemBuilder: (context, index) {
-                                          if(index == 0){
+                                          if (index == 0) {
                                             return SizedBox(
-                                              child: Text(messages[index].dateTime.toStringDateFormat().substring(0, 10), textAlign: TextAlign.center),
-                                            )  ;
+                                              child: Text(
+                                                  toStringDateFormat(
+                                                          messages[index]
+                                                              .dateTime)
+                                                      .substring(0, 10),
+                                                  textAlign: TextAlign.center),
+                                            );
                                           }
                                           return MessageBox(
-                                            message: messages[index-1],
+                                            message: messages[index - 1],
                                           );
                                         },
                                       );
@@ -208,7 +240,7 @@ class _ChatRoomViewState extends BaseView<ChatRoomView, ChatViewModel>
                                                                     Colors
                                                                         .blue)),
                                                 onPressed: () {
-                                                  viewModel.sendMessage(
+                                                   viewModel.sendMessage(
                                                       messageController.text);
                                                 },
                                                 child: Row(
@@ -258,6 +290,7 @@ class _ChatRoomViewState extends BaseView<ChatRoomView, ChatViewModel>
   @override
   void dispose() {
     messageController.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 
@@ -267,4 +300,9 @@ class _ChatRoomViewState extends BaseView<ChatRoomView, ChatViewModel>
     setState(() {});
   }
 
+  @override
+  String toStringDateFormat(int dateTime) {
+    var dt = DateTime.fromMillisecondsSinceEpoch(dateTime);
+    return DateFormat('MM/dd/yyyy, hh:mm a').format(dt);
+  }
 }
