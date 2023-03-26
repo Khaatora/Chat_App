@@ -1,4 +1,5 @@
 import 'package:chat_own/firebase_options.dart';
+import 'package:chat_own/models/chat_room.dart';
 import 'package:chat_own/modules/add_room/add_room_view.dart';
 import 'package:chat_own/modules/chat_screen/chat_room_view.dart';
 import 'package:chat_own/modules/create_account/create_account_view.dart';
@@ -17,7 +18,7 @@ void main() async {
   );
 
   runApp(ChangeNotifierProvider(
-    create: (context) => MyProvider()..initProvider(),
+    create: (context) => MyProvider(),
     lazy: false,
     builder: (context, child) {
       return const MyApp();
@@ -32,16 +33,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     User? currentUser = context.select<MyProvider, User?>((provider) => provider.firebaseUser);
+    String initialRoute = currentUser != null
+        ? HomeView.routeName
+        : LoginView.routeName;
     return MaterialApp(
-      initialRoute: currentUser != null
-          ? HomeView.routeName
-          : LoginView.routeName,
-      routes: {
-        CreateAccountView.routeName: (context) => CreateAccountView(),
-        LoginView.routeName: (context) => const LoginView(),
-        HomeView.routeName: (context) => const HomeView(),
-        AddRoomView.routeName: (context) => const AddRoomView(),
-        ChatRoomView.routeName: (context) => const ChatRoomView(),
+      initialRoute: initialRoute,
+      onGenerateRoute: (settings) {
+        var routes = <String, WidgetBuilder>{
+          CreateAccountView.routeName: (context) => CreateAccountView(),
+          LoginView.routeName: (context) => const LoginView(),
+          HomeView.routeName: (context) => const HomeView(),
+          AddRoomView.routeName: (context) => const AddRoomView(),
+          ChatRoomView.routeName: (context) => ChatRoomView(settings.arguments as ChatRoomModel),
+        };
+        WidgetBuilder? builder = routes[settings.name];
+        return MaterialPageRoute(builder: (context) => builder!(context),);
       },
       debugShowCheckedModeBanner: false,
     );
