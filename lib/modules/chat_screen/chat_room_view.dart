@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chat_own/base_class.dart';
 import 'package:chat_own/models/chat_room.dart';
 import 'package:chat_own/models/message.dart';
@@ -43,10 +45,6 @@ class _ChatRoomViewState extends BaseView<ChatRoomView, ChatViewModel>
     _messageStream = viewModel.getMessages();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,9 +126,11 @@ class _ChatRoomViewState extends BaseView<ChatRoomView, ChatViewModel>
                                       }
                                       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                                         if (scrollController.hasClients) {
-                                          scrollController.animateTo(scrollController.position.maxScrollExtent,
-                                              duration: const Duration(milliseconds: 500),
-                                              curve: Curves.easeInOut);
+                                          Timer(const Duration(milliseconds: 100), () {
+                                            scrollController.animateTo(scrollController.position.maxScrollExtent+100,
+                                                duration: const Duration(milliseconds: 500),
+                                                curve: Curves.easeInOut);
+                                          });
                                         }
                                       });
                                       return ListView.separated(
@@ -304,5 +304,13 @@ class _ChatRoomViewState extends BaseView<ChatRoomView, ChatViewModel>
   String toStringDateFormat(int dateTime) {
     var dt = DateTime.fromMillisecondsSinceEpoch(dateTime);
     return DateFormat('MM/dd/yyyy, hh:mm a').format(dt);
+  }
+
+  void scrollToEnd(){
+    if (scrollController.hasClients) {
+      scrollController.animateTo(scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut);
+    }
   }
 }
